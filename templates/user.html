@@ -1,0 +1,232 @@
+<!--Template for the EXPANSION 'Allowing users to login and register 'securely' (2 points) ' -->
+<div id="user-stuff">
+    <p id="user-logged-in"></p>
+    <button id="login">Show Login</button>
+    <div id="login-info">
+        <br>
+        <input id="login-username" type="text" placeholder="Username"> <br>
+        <input id="login-password" type="password" placeholder="Password"> <br>
+        <button id="login-submit">Log in</button>  <br><br>
+    </div>
+
+    <button id="register">Show Register</button>
+    <div id="register-info">
+        <br>
+        <input id="register-username" type="text" placeholder="Username"> <br>
+        <input id="register-password1" type="password" placeholder="Password"> <br>
+        <input id="register-password2" type="password" placeholder="Confirm Password"> <br>
+        <button id="register-submit">Register</button> <br> <br>
+    </div>
+    <div id="path-info">
+        <br>
+        <input id="path-name" type="text" placeholder="Path"> <br>
+        <button id="path-submit">Submit path</button> <br> <br>
+    </div>
+    <br>
+    <button id="logout">Log out</button> <br> <br>
+</div>
+<script>
+
+var user = {}
+user.logged_in = false
+user.username = ""
+user.path = ""
+
+var logout = {}
+logout.button = document.getElementById("logout")
+logout.button.style.display = "none"
+logout.show = false
+
+var login = {}
+login.button = document.getElementById("login")
+login.info = document.getElementById("login-info")
+login.info.style.display = "none"
+login.username = document.getElementById("login-username")
+login.password = document.getElementById("login-password")
+login.submit = document.getElementById("login-submit")
+login.show = false
+
+var register = {}
+register.button = document.getElementById("register")
+register.info = document.getElementById("register-info")
+register.info.style.display = "none"
+register.username = document.getElementById("register-username")
+register.password1 = document.getElementById("register-password1")
+register.password2 = document.getElementById("register-password2")
+register.submit = document.getElementById("register-submit")
+register.show = false
+
+var path = {}
+path.button = document.getElementById("path")
+path.info = document.getElementById("path-info")
+path.info.style.display = "none"
+path.path_name = document.getElementById("path-name")
+path.submit = document.getElementById("path-submit")
+path.show = false
+
+login.button.onclick = ()=> {
+    if(!login.show){
+        login.button.textContent = "Hide Login"
+        login.show = true
+        login.info.style.display = "block"
+    } else {
+        login.button.textContent = "Show Login"
+        login.show = false
+        login.info.style.display = "none"
+    }
+}
+
+login.submit.onclick = async ()=> {
+    var username = login.username.value,
+        password = login.password.value;
+
+    var req = {
+        username,
+        password
+    }
+    var res = await fetch('/login',{
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify(req)
+    })
+    res = await res.json()
+    console.log(res)
+    if (res.status == "True"){
+      login.show = false
+      login.info.style.display = "block"
+      login.button.style.display = "block"
+      user.logged_in = true
+      user.username = res.username
+    }
+    do_login(res)
+
+    // How is your response formatted? Was it a success or a failure?
+    // If the user is now logged in, then maybe hide all the login/register stuff?
+
+}
+
+
+register.button.onclick = () => {
+    if(!register.show){
+        register.button.textContent = "Hide Register"
+        register.show = true
+        register.info.style.display = "block"
+    } else {
+        register.button.textContent = "Show Register"
+        register.show = false
+        register.info.style.display = "none"
+    }
+}
+
+register.submit.onclick = async ()=> {
+    var username = register.username.value,
+        password1 = register.password1.value,
+        password2 = register.password2.value;
+    if (password1 != password2)
+        return alert("The passwords don't match")
+
+    var req = {
+        username,
+        password: password1
+    }
+    var res = await fetch('/register',{
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify(req)
+    })
+    res = await res.json()
+    console.log(res.status)
+    do_login(res)
+    // How is your response formatted? Was it a success or a failure?
+    // If the user is now logged in, then maybe hide all the login/register stuff?
+}
+
+path.submit.onclick = async ()=> {
+      var lat1 = parseFloat(document.querySelector('#lat1').value)
+      var lng1 = parseFloat(document.querySelector('#lng1').value)
+      var lat2 = parseFloat(document.querySelector('#lat2').value)
+      var lng2 = parseFloat(document.querySelector('#lng2').value)
+
+      // Check that they're not Nan (stops function if one is Nan)
+      if(!lat1 || !lng1  || !lat2 || !lng2)
+          return alert('Formatting Error: Coordinates are not float values.')
+
+      req = {lat1, lng1, lat2, lng2} // Dictionary auto-keys
+
+      res = await fetch('/shortest-path', {
+          method:'POST',
+          credentials: 'same-origin',
+          body: JSON.stringify(req)
+      })
+
+      res = await res.json()
+      console.log(res.path)
+      res = await fetch('/path', {
+          method:'POST',
+          credentials: 'same-origin',
+          body: JSON.stringify(res.path)
+      })
+}
+
+function do_logout(){
+  if (user.logged_in == true){
+      user.logged_in = false
+      user.username = ""
+      user.path = ""
+      register.show = true
+      register.button.style.display = "block"
+      login.show = true
+      login.button.style.display = "block"
+      path.info.style.display = "none"
+      path.show = false
+      logout.show = false
+      logout.button.style.display = "none"
+      login.button.textContent = "Show Login"
+      login.password = ""
+      register.password = ""
+      check_login()
+  }
+  else{
+    console.log("what the fuck")
+  }
+}
+
+logout.button.onclick = async()=> {
+      do_logout()
+}
+
+
+function do_login(res){
+  if (res.status == "True"){
+    register.show = false
+    register.button.style.display = "none"
+    register.info.style.display = "none"
+    user.logged_in = true
+    user.username = res.username
+    login.show = false
+    login.info.style.display = "none"
+    login.button.style.display = "none"
+    path.info.style.display = "block"
+    path.show = true
+    logout.show = true
+    logout.button.style.display = "block"
+    check_login()
+
+  }
+}
+
+
+  console.log(user.logged_in)
+  function check_login()
+  {
+    logged_in_text = document.getElementById("user-logged-in")
+    if (user.logged_in == true){
+      logged_in_text.innerHTML = "Logged in as: " + user.username
+    }
+    else {
+      logged_in_text.innerHTML = ""
+    }
+  }
+
+
+</script>

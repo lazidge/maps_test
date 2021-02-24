@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <link rel="icon" href="favicon.ico">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+        {{ templates/index.css }}
+    </head>
+    <body>
+        <div id="map"></div>
+        <form id="path-form">
+                <div class="row" >
+                    <div class="col">
+                        Place marker for:
+                        <div>
+                            <input type="radio" name="marker-point" id="marker-point-start" checked="true" />
+                            <label for="marker-point-start">Start</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="marker-point" id="marker-point-end" />
+                            <label for="marker-point-end">Destination</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label for="lat1">Start lat:</label>
+                            <input name="lat1" id="lat1" />
+                        </div>
+                        <div>
+                            <label for="lng1">Start lng:</label>
+                            <input name="lng1" id="lng1" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label for="lat2">End latitude:</label>
+                            <input name="lat2" id="lat2" />
+                        </div>
+                        <div>
+                                <label for="lng2">End longitude:</label>
+                                <input name="lng2" id="lng2" />
+                        </div>
+                    </div>
+                    <input type="submit" value="Find path" />
+
+                </div>
+
+        </form>
+        {{ templates/index.js }}
+        {{ templates/user.html }}
+
+
+    </body>
+</html>

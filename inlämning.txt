@@ -1,0 +1,7 @@
+Features:
+A* - algorithms.py
+SQL-databas - db.py + server.py
+Iterativ parser - osm_parse.py + store.py
+Gridsearch - server.py + algorithms.py
+Ikon - server.py
+Inloggning - server.py + user.html + account.py
